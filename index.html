@@ -4,29 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cardápio Digital</title>
-
 <style>
 html,body{
     margin:0;
-    padding:0;
     width:100%;
     height:100%;
-    background:#000;
     overflow:hidden;
+    background:black;
 }
 
 #container{
     width:100vw;
     height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
 }
 
 img,video{
-    width:100vw;
-    height:100vh;
+    width:100%;
+    height:100%;
     object-fit:contain;
 }
 </style>
@@ -35,65 +29,47 @@ img,video{
 
 <div id="container"></div>
 
-<audio id="bgm" autoplay loop>
-    <source src="musica.mp3" type="audio/mpeg">
-</audio>
-
 <script>
-
-async function carregarMidia(){
+async function carregar() {
 
     const resposta = await fetch(
-        'config.json?v=' + new Date().getTime()
+        "config.json?v=" + Date.now()
     );
 
-    const config = await resposta.json();
+    const dados = await resposta.json();
+
+    const arquivo = dados.arquivo.toLowerCase();
 
     const container =
         document.getElementById("container");
 
     container.innerHTML = "";
 
-    if(config.tipo === "imagem" ||
-       config.tipo === "gif"){
-
-        const img =
-            document.createElement("img");
-
-        img.src =
-            config.arquivo +
-            "?v=" +
-            new Date().getTime();
-
-        container.appendChild(img);
+    if (
+        arquivo.endsWith(".jpg") ||
+        arquivo.endsWith(".jpeg") ||
+        arquivo.endsWith(".png") ||
+        arquivo.endsWith(".gif") ||
+        arquivo.endsWith(".webp")
+    ) {
+        container.innerHTML =
+            `<img src="${dados.arquivo}?v=${Date.now()}">`;
     }
 
-    if(config.tipo === "video"){
-
-        const video =
-            document.createElement("video");
-
-        video.src =
-            config.arquivo +
-            "?v=" +
-            new Date().getTime();
-
-        video.autoplay = true;
-        video.loop = true;
-        video.muted = false;
-        video.playsInline = true;
-
-        container.appendChild(video);
+    else if (
+        arquivo.endsWith(".mp4") ||
+        arquivo.endsWith(".webm")
+    ) {
+        container.innerHTML =
+            `<video autoplay loop muted playsinline>
+                <source src="${dados.arquivo}?v=${Date.now()}">
+             </video>`;
     }
 }
 
-carregarMidia();
+carregar();
 
-setInterval(
-    carregarMidia,
-    60000
-);
-
+setInterval(carregar, 60000);
 </script>
 
 </body>
